@@ -1,0 +1,31 @@
+SIMULADOR DE ROBOT SUMO EN LINEA - EQUIPO PRISMA
+
+ESTADO DEL PROYECTO
+El proyecto ya esta configurado con la Project URL y la clave Publishable de Supabase.
+No necesitas modificar config.js para hacer la primera prueba.
+
+ARCHIVOS OBLIGATORIOS
+- index.html
+- config.js
+- LEEME_CONFIGURACION.txt
+
+COMO SUBIRLO A NETLIFY
+1. Descomprime el archivo ZIP.
+2. Verifica que index.html y config.js esten juntos en la misma carpeta.
+3. Entra a Netlify y abre Deploy manually o Netlify Drop.
+4. Arrastra la carpeta descomprimida completa.
+5. Abre la URL que genere Netlify.
+
+COMO PROBAR EL MODO EN LINEA
+1. Abre la misma URL de Netlify en dos computadores o navegadores diferentes.
+2. En el primer equipo, selecciona Juego en linea y crea una sala.
+3. Comparte el codigo de seis caracteres.
+4. En el segundo equipo, selecciona Juego en linea, escribe el codigo y entra.
+5. La anfitriona inicia la ronda.
+
+SUPABASE REALTIME
+En el panel de Supabase revisa que Realtime permita canales publicos. Si la conexion no funciona, revisa esta configuracion y vuelve a probar.
+
+SEGURIDAD
+La clave incluida es de tipo Publishable y puede estar en el navegador.
+Nunca pongas una clave sb_secret_ ni service_role dentro de config.js o index.html.

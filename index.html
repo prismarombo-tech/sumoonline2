@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batalla de Robots Sumo RC - Equipo PRISMA</title>
+  <style>
+    :root{
+      --bg:#07111f;--panel:#0f2036;--panel2:#142a45;--accent:#43e6b2;
+      --accent2:#ffb84d;--danger:#ff5f72;--blue:#5aa7ff;--text:#eef8ff;
+      --muted:#9db5c9;--line:rgba(255,255,255,.12)
+    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 10% 10%,rgba(67,230,178,.15),transparent 28%),radial-gradient(circle at 90% 20%,rgba(255,184,77,.12),transparent 26%),linear-gradient(135deg,#040a13,#0a1829 55%,#07111f)}
+    button,input{font:inherit}.app{width:min(1550px,100%);margin:auto;padding:16px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding:12px 16px;border:1px solid var(--line);border-radius:18px;background:rgba(10,24,41,.82);backdrop-filter:blur(12px);box-shadow:0 18px 45px rgba(0,0,0,.25)}
+    .brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--blue));color:#04131c;font-weight:1000;font-size:22px;box-shadow:0 0 28px rgba(67,230,178,.25)}
+    h1{font-size:clamp(18px,2.2vw,30px);margin:0;line-height:1.05}.subtitle{color:var(--muted);font-size:13px;margin-top:4px}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:850;color:#07111f;background:var(--accent);transition:.2s transform,.2s filter}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn.secondary{color:var(--text);background:#213b5c;border:1px solid var(--line)}.btn.warning{background:var(--accent2)}
+    .layout{display:grid;grid-template-columns:minmax(330px,410px) 1fr;gap:14px}.panel{border:1px solid var(--line);border-radius:18px;background:rgba(12,28,48,.9);box-shadow:0 20px 55px rgba(0,0,0,.28);overflow:hidden}.garage{padding:16px;max-height:calc(100vh - 110px);overflow:auto}.section{margin-bottom:18px}.section-title{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:9px}.section-title h2{font-size:16px;margin:0}.section-title span{font-size:12px;color:var(--muted)}
+    .mode-switch,.robot-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode-btn,.robot-tab{border:1px solid var(--line);border-radius:12px;background:#122943;color:var(--text);padding:10px;cursor:pointer;font-weight:850}.mode-btn.active{background:var(--accent);color:#07111f;border-color:transparent}.robot-tab.active.p1{background:var(--accent);color:#07111f}.robot-tab.active.p2{background:var(--accent2);color:#241300}.robot-tab small{display:block;font-weight:600;opacity:.8;margin-top:2px}
+    .options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.option{position:relative;border:1px solid var(--line);border-radius:13px;padding:10px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.01));cursor:pointer;transition:.18s;min-height:82px}.option:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}.option.selected.p1{border-color:var(--accent);box-shadow:0 0 0 2px rgba(67,230,178,.12) inset;background:rgba(67,230,178,.08)}.option.selected.p2{border-color:var(--accent2);box-shadow:0 0 0 2px rgba(255,184,77,.12) inset;background:rgba(255,184,77,.08)}.option strong{display:block;font-size:13px;margin-bottom:4px;padding-right:28px}.option small{display:block;color:var(--muted);font-size:11px;line-height:1.25}.icon{position:absolute;right:8px;top:8px;font-size:23px}
+    .power-box{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#0b1a2d}.slider-row{display:grid;grid-template-columns:110px 1fr 48px;align-items:center;gap:8px}.slider-row label{font-size:12px;color:#dceaf5}.slider-row output{font-size:12px;font-weight:900;text-align:right}.slider-row input{width:100%;accent-color:var(--accent)}.slider-help{font-size:11px;color:var(--muted);line-height:1.4}.p2-edit .slider-row input{accent-color:var(--accent2)}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.stat{background:#0b1a2d;border:1px solid var(--line);border-radius:11px;padding:8px}.stat-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.6px}.stat-value{font-weight:900;font-size:14px;margin-top:2px}
+    .mini-configs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mini-config{border:1px solid var(--line);border-radius:12px;padding:10px;background:#0b1a2d;font-size:11px;color:var(--muted);line-height:1.45}.mini-config b{font-size:13px;color:var(--text)}.mini-config.p1{border-top:3px solid var(--accent)}.mini-config.p2{border-top:3px solid var(--accent2)}
+    .help{padding:11px;border-radius:12px;background:rgba(90,167,255,.08);border:1px solid rgba(90,167,255,.25);color:#cfe5ff;font-size:12px;line-height:1.45}.legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.player-help{border:1px solid var(--line);border-radius:10px;padding:8px}.player-help b{display:block;margin-bottom:5px}.key{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);margin-top:4px}kbd{border:1px solid var(--line);border-bottom-width:3px;background:#182d47;padding:2px 6px;border-radius:6px;color:white;font-size:10px}
+    .stage{position:relative;min-height:680px;display:grid;place-items:center;background:#050b13}canvas{display:block;width:100%;height:auto;max-height:calc(100vh - 110px);object-fit:contain;background:#050b13}.hud{position:absolute;inset:12px 12px auto 12px;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;pointer-events:none}.hud-card{background:rgba(5,13,22,.80);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(8px);border-radius:12px;padding:9px 12px;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.22)}.hud-card.center{text-align:center}.hud-card.right{text-align:right}.hud-card b{font-size:13px}.hud-card div{font-size:11px;color:var(--muted);margin-top:3px}.speed{font-size:22px!important;font-weight:1000;line-height:1}.p1-color{color:var(--accent)!important}.p2-color{color:var(--accent2)!important}.score{font-size:27px!important;font-weight:1000;color:white!important;line-height:1}.round-label{font-weight:900;color:#dcecff!important;letter-spacing:.4px}.round-dots{display:flex;justify-content:center;gap:5px;margin-top:6px!important}.round-dot{width:14px;height:7px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.10)}.round-dot.p1{background:var(--accent);border-color:var(--accent)}.round-dot.p2{background:var(--accent2);border-color:var(--accent2)}.round-dot.current{box-shadow:0 0 0 2px rgba(90,167,255,.32);border-color:var(--blue)}
+    .message{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.95);background:rgba(4,11,18,.94);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:20px 24px;text-align:center;opacity:0;pointer-events:none;transition:.25s;min-width:min(460px,86%);box-shadow:0 25px 70px rgba(0,0,0,.45)}.message.show{opacity:1;transform:translate(-50%,-50%) scale(1)}.message h3{margin:0 0 6px;font-size:24px}.message p{margin:0;color:var(--muted);line-height:1.45}
+    .mobile-controls{position:absolute;inset:auto 12px 12px 12px;display:none;justify-content:space-between;pointer-events:none}.pad-wrap{pointer-events:auto;text-align:center;font-size:10px;font-weight:900}.pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:5px;margin-top:4px}.control-btn{border:1px solid rgba(255,255,255,.2);border-radius:13px;background:rgba(12,32,52,.88);color:white;font-size:20px;font-weight:1000;touch-action:none;user-select:none}.control-btn.active.p1{background:var(--accent);color:#07111f}.control-btn.active.p2{background:var(--accent2);color:#241300}.up{grid-column:2}.left{grid-column:1;grid-row:2}.down{grid-column:2;grid-row:2}.right-key{grid-column:3;grid-row:2}
+    @media(max-width:1030px){.layout{grid-template-columns:1fr}.garage{max-height:none}.stage{min-height:520px}.mobile-controls{display:flex}.topbar{align-items:flex-start}.top-actions{max-width:250px}}
+    @media(max-width:600px){.app{padding:8px}.topbar{border-radius:14px;padding:10px}.logo{width:40px;height:40px}.subtitle{display:none}.layout{gap:8px}.panel{border-radius:14px}.garage{padding:12px}.options{grid-template-columns:1fr 1fr}.stage{min-height:430px}.hud-card{min-width:0;padding:7px}.hud-card div{font-size:9px}.speed{font-size:17px!important}.score{font-size:20px!important}.slider-row{grid-template-columns:95px 1fr 43px}.mini-configs{grid-template-columns:1fr}}
+
+    .connection-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.connection-btn{border:1px solid var(--line);border-radius:12px;background:#122943;color:var(--text);padding:10px;cursor:pointer;font-weight:900}.connection-btn.active{background:linear-gradient(135deg,var(--blue),var(--accent));color:#06131d;border-color:transparent}.online-panel{display:none;margin-top:10px;padding:12px;border:1px solid rgba(90,167,255,.30);border-radius:14px;background:rgba(90,167,255,.07)}.online-panel.show{display:block}.online-fields{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:8px}.online-fields input{min-width:0;border:1px solid var(--line);border-radius:10px;background:#081728;color:var(--text);padding:10px 11px;outline:none}.online-fields input:focus{border-color:var(--blue)}.online-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.online-status{margin-top:9px;padding:9px;border-radius:10px;background:#091929;border:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.45}.online-status strong{color:var(--text)}.room-code{font-size:18px;font-weight:1000;letter-spacing:3px;color:var(--accent)}.connection-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#627184;margin-right:6px}.connection-dot.ok{background:var(--accent);box-shadow:0 0 10px rgba(67,230,178,.65)}.connection-dot.wait{background:var(--accent2);box-shadow:0 0 10px rgba(255,184,77,.5)}.connection-dot.error{background:var(--danger)}.online-note{font-size:10px;color:var(--muted);margin-top:8px;line-height:1.4}.host-only[disabled]{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}.online-role-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:900;background:#17314e;color:#dceeff;margin-left:6px}.copy-btn{border:0;border-radius:8px;padding:6px 8px;background:#213b5c;color:var(--text);cursor:pointer;font-size:10px;font-weight:800}.hidden{display:none!important}
+
+
+    /* Pantalla de bienvenida del Equipo PRISMA */
+    body.splash-open{overflow:hidden}
+    .prisma-splash{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 50% 32%,rgba(67,230,178,.22),transparent 30%),radial-gradient(circle at 75% 70%,rgba(90,167,255,.17),transparent 26%),linear-gradient(145deg,#020711,#071426 58%,#081c2d);opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
+    .prisma-splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+    .prisma-splash::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,transparent,black 20%,black 80%,transparent)}
+    .splash-card{position:relative;width:min(720px,94vw);padding:clamp(28px,5vw,56px);text-align:center;border:1px solid rgba(255,255,255,.16);border-radius:30px;background:rgba(7,20,35,.82);backdrop-filter:blur(16px);box-shadow:0 35px 100px rgba(0,0,0,.55),0 0 70px rgba(67,230,178,.10);overflow:hidden}
+    .splash-card::after{content:"";position:absolute;inset:auto -20% -55% -20%;height:65%;background:radial-gradient(ellipse,rgba(67,230,178,.16),transparent 68%);pointer-events:none}
+    .splash-emblem{position:relative;width:118px;height:118px;margin:0 auto 22px;border-radius:32px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--blue));color:#03131d;font-size:58px;font-weight:1000;box-shadow:0 0 0 9px rgba(67,230,178,.08),0 0 55px rgba(67,230,178,.35);animation:prismaFloat 2.4s ease-in-out infinite}
+    .splash-emblem::before,.splash-emblem::after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;top:22px;background:#03131d;box-shadow:0 0 0 4px rgba(255,255,255,.22)}
+    .splash-emblem::before{left:27px}.splash-emblem::after{right:27px}
+    .splash-emblem span{transform:translateY(17px)}
+    .splash-kicker{margin:0 0 8px;color:var(--accent);font-size:clamp(13px,2vw,17px);font-weight:950;letter-spacing:.32em;text-transform:uppercase}
+    .splash-title{margin:0;font-size:clamp(42px,8vw,82px);line-height:.94;letter-spacing:-.045em;text-shadow:0 0 35px rgba(90,167,255,.18)}
+    .splash-subtitle{margin:16px auto 0;max-width:590px;color:#bdd0df;font-size:clamp(15px,2.4vw,20px);line-height:1.5}
+    .splash-game{display:inline-block;margin-top:14px;padding:7px 13px;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:#e9f7ff;background:rgba(255,255,255,.05);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+    .splash-enter{position:relative;z-index:1;margin-top:28px;border:0;border-radius:15px;padding:14px 28px;min-width:220px;cursor:pointer;background:linear-gradient(135deg,var(--accent),#76f0cb);color:#03131d;font-weight:1000;font-size:16px;box-shadow:0 14px 35px rgba(67,230,178,.22);transition:transform .2s ease,filter .2s ease}
+    .splash-enter:hover{transform:translateY(-2px) scale(1.02);filter:brightness(1.08)}
+    .splash-enter:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
+    .splash-credit{position:relative;z-index:1;margin-top:16px;color:#829bb0;font-size:11px;letter-spacing:.04em}
+    @keyframes prismaFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+    @media(prefers-reduced-motion:reduce){.splash-emblem{animation:none}.prisma-splash,.splash-enter{transition:none}}
+
+  </style>
+</head>
+<body class="splash-open">
+<div class="prisma-splash" id="prismaSplash" role="dialog" aria-modal="true" aria-labelledby="prismaSplashTitle">
+  <div class="splash-card">
+    <div class="splash-emblem" aria-hidden="true"><span>P</span></div>
+    <p class="splash-kicker">Una experiencia creada por</p>
+    <h1 class="splash-title" id="prismaSplashTitle">EQUIPO PRISMA</h1>
+    <p class="splash-subtitle">Robótica, creatividad y estrategia para aprender compitiendo.</p>
+    <div class="splash-game">Batalla de Robots Sumo RC</div><br>
+    <button class="splash-enter" id="enterSimulatorBtn" type="button">Entrar al simulador</button>
+    <div class="splash-credit">Colegio Liceo Femenino de Cundinamarca Mercedes Nariño</div>
+  </div>
+</div>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">P</div><div><h1>Batalla de Robots Sumo RC</h1><div class="subtitle">EQUIPO PRISMA · Diseña dos robots, calibra su potencia y compite</div></div></div>
+    <div class="top-actions">
+      <button class="btn secondary host-only" id="resetBtn">Reiniciar todo</button>
+      <button class="btn warning host-only" id="roundBtn">Preparar ronda</button>
+      <button class="btn host-only" id="startBtn">Iniciar ronda 1</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel garage">
+      <div class="section">
+        <div class="section-title"><h2>Forma de conexión</h2><span>local o desde otros equipos</span></div>
+        <div class="connection-grid">
+          <button class="connection-btn active" data-connection="local">Mismo computador</button>
+          <button class="connection-btn" data-connection="online">Juego en línea</button>
+        </div>
+        <div class="online-panel" id="onlinePanel">
+          <label for="playerName" style="font-size:11px;color:var(--muted)">Nombre de la jugadora</label>
+          <div class="online-fields"><input id="playerName" maxlength="20" placeholder="Ejemplo: Laura" value="Jugadora"><button class="btn" id="createRoomBtn">Crear sala</button></div>
+          <div class="online-fields"><input id="roomCodeInput" maxlength="6" placeholder="Código de sala"><button class="btn warning" id="joinRoomBtn">Unirse</button></div>
+          <div class="online-actions"><button class="btn secondary" id="copyRoomBtn" disabled>Copiar código</button><button class="btn secondary" id="leaveRoomBtn" disabled>Salir de sala</button></div>
+          <div class="online-status" id="onlineStatus"><span class="connection-dot"></span><strong>Sin conectar.</strong> Crea una sala o escribe un código.</div>
+          <div class="online-note">Cada sala admite dos jugadoras. Varias parejas pueden jugar simultáneamente usando códigos diferentes.</div>
+        </div>
+      </div>
+
+      <div class="section" id="localModeSection">
+        <div class="section-title"><h2>Modo de juego</h2><span>entrenamiento o duelo</span></div>
+        <div class="mode-switch">
+          <button class="mode-btn" data-mode="practice">1 robot</button>
+          <button class="mode-btn active" data-mode="battle">2 robots</button>
+        </div>
+      </div>
+
+      <div class="section" id="robotSelectorSection">
+        <div class="section-title"><h2>Robot que estás configurando</h2><span>cada uno es independiente</span></div>
+        <div class="robot-tabs">
+          <button class="robot-tab p1 active" data-player="0">ROBOT 1<small>WASD</small></button>
+          <button class="robot-tab p2" data-player="1">ROBOT 2<small>Flechas</small></button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><h2>1. Escoge la rampa</h2><span>5 diseños</span></div>
+        <div class="options" id="rampOptions"></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><h2>2. Escoge las llantas</h2><span>10 tipos</span></div>
+        <div class="options" id="tireOptions"></div>
+      </div>
+      <div class="section">
+        <div class="section-title"><h2>3. Escoge la batería</h2><span>3 voltajes</span></div>
+        <div class="options" id="batteryOptions"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><h2>4. Calibra la potencia</h2><span>20 % a 100 %</span></div>
+        <div class="power-box" id="powerBox">
+          <div class="slider-row"><label for="forwardPower">Ir hacia adelante</label><input id="forwardPower" type="range" min="20" max="200" step="5"><output id="forwardOut">140 %</output></div>
+          <div class="slider-row"><label for="reversePower">Ir hacia atrás</label><input id="reversePower" type="range" min="20" max="200" step="5"><output id="reverseOut">100 %</output></div>
+          <div class="slider-row"><label for="turnPower">Velocidad de giro</label><input id="turnPower" type="range" min="10" max="250" step="5"><output id="turnOut">160 %</output></div>
+          <div class="slider-help">Puedes ajustar el avance y el retroceso entre 20 % y 200 %. El giro tiene una escala más precisa de 10 % a 250 %: valores altos permiten vueltas muy rápidas, pero también hacen más fácil perder el control.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><h2>Comportamiento del robot activo</h2><span>cálculo en tiempo real</span></div>
+        <div class="stats">
+          <div class="stat"><div class="stat-label">Velocidad adelante</div><div class="stat-value" id="maxSpeedStat">0</div></div>
+          <div class="stat"><div class="stat-label">Velocidad reversa</div><div class="stat-value" id="reverseStat">0</div></div>
+          <div class="stat"><div class="stat-label">Agarre</div><div class="stat-value" id="gripStat">0</div></div>
+          <div class="stat"><div class="stat-label">Giro efectivo</div><div class="stat-value" id="turnStat">0</div></div>
+          <div class="stat"><div class="stat-label">Empuje frontal</div><div class="stat-value" id="pushStat">0</div></div>
+          <div class="stat"><div class="stat-label">Peso</div><div class="stat-value" id="weightStat">0</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><h2>Resumen de los competidores</h2><span>antes de iniciar</span></div>
+        <div class="mini-configs"><div class="mini-config p1" id="summaryP1"></div><div class="mini-config p2" id="summaryP2"></div></div>
+      </div>
+
+      <div class="help">
+        <b>Meta:</b> empuja al robot contrario hasta sacarlo completamente del dohyo. El resultado depende de la habilidad de conducción y de la configuración mecánica.
+        <div class="legend">
+          <div class="player-help"><b class="p1-color">Robot 1</b><span class="key"><kbd>W</kbd><kbd>S</kbd> avanzar/reversa</span><span class="key"><kbd>A</kbd><kbd>D</kbd> girar</span><span class="key"><kbd>Shift</kbd> turbo</span></div>
+          <div class="player-help"><b class="p2-color">Robot 2</b><span class="key"><kbd>↑</kbd><kbd>↓</kbd> avanzar/reversa</span><span class="key"><kbd>←</kbd><kbd>→</kbd> girar</span><span class="key"><kbd>Enter</kbd> turbo</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel stage" id="stage">
+      <canvas id="game" width="1100" height="720"></canvas>
+      <div class="hud">
+        <div class="hud-card"><b class="p1-color" id="player1Label">ROBOT 1 · WASD</b><div class="speed p1-color" id="speed1Hud">0,0</div><div id="config1Hud">Configuración</div></div>
+        <div class="hud-card center"><b>MARCADOR</b><div class="score" id="scoreHud">0 — 0</div><div class="round-label" id="roundHud">Ronda 1 de 5</div><div class="round-dots" id="roundDots" aria-label="Resultados de las cinco rondas"></div><div id="statusHud">Pulsa “Iniciar ronda 1”</div><div id="timeHud">Tiempo: 0,0 s</div></div>
+        <div class="hud-card right"><b class="p2-color" id="player2Label">ROBOT 2 · FLECHAS</b><div class="speed p2-color" id="speed2Hud">0,0</div><div id="config2Hud">Configuración</div></div>
+      </div>
+      <div class="message show" id="message"><h3>¡EQUIPO PRISMA!</h3><p>Juega localmente o crea una sala en línea para competir desde dos equipos.</p></div>
+      <div class="mobile-controls">
+        <div class="pad-wrap p1-color">ROBOT 1<div class="pad"><button class="control-btn up" data-key="KeyW" data-player="0">▲</button><button class="control-btn left" data-key="KeyA" data-player="0">◀</button><button class="control-btn down" data-key="KeyS" data-player="0">▼</button><button class="control-btn right-key" data-key="KeyD" data-player="0">▶</button></div></div>
+        <div class="pad-wrap p2-color">ROBOT 2<div class="pad"><button class="control-btn up" data-key="ArrowUp" data-player="1">▲</button><button class="control-btn left" data-key="ArrowLeft" data-player="1">◀</button><button class="control-btn down" data-key="ArrowDown" data-player="1">▼</button><button class="control-btn right-key" data-key="ArrowRight" data-player="1">▶</button></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  'use strict';
+
+  const ramps = [
+    {id:'plana',name:'Rampa plana',icon:'▰',attack:1.00,weight:1.00,stability:1.12,desc:'Muy estable y fácil de controlar.'},
+    {id:'cuna',name:'Rampa cuña',icon:'◢',attack:1.18,weight:.96,stability:1.00,desc:'Equilibrio entre empuje y control.'},
+    {id:'larga',name:'Rampa larga',icon:'➤',attack:1.34,weight:1.08,stability:.91,desc:'Entra debajo del rival, gira más lento.'},
+    {id:'doble',name:'Rampa doble',icon:'⏫',attack:1.26,weight:1.14,stability:1.07,desc:'Ataque amplio y buena estabilidad.'},
+    {id:'agresiva',name:'Rampa agresiva',icon:'⚡',attack:1.48,weight:.92,stability:.82,desc:'Mucho ataque, mayor riesgo de derrape.'}
+  ];
+  const tires = [
+    {id:'goma-suave',name:'Goma suave',icon:'◉',grip:1.24,turn:1.06,rolling:.92,weight:1.02,desc:'Máximo agarre para principiantes.'},
+    {id:'goma-dura',name:'Goma dura',icon:'●',grip:.94,turn:1.02,rolling:1.08,weight:.98,desc:'Rápida, pero derrapa con facilidad.'},
+    {id:'espuma',name:'Espuma',icon:'◌',grip:1.12,turn:1.12,rolling:.98,weight:.90,desc:'Ligera y ágil en los cambios.'},
+    {id:'silicona',name:'Silicona',icon:'◎',grip:1.31,turn:.96,rolling:.88,weight:1.05,desc:'Gran tracción, consume más energía.'},
+    {id:'ancha',name:'Llantas anchas',icon:'⬤',grip:1.20,turn:.88,rolling:.94,weight:1.14,desc:'Mucho empuje, giro más pesado.'},
+    {id:'estrecha',name:'Llantas estrechas',icon:'┃',grip:.88,turn:1.22,rolling:1.10,weight:.89,desc:'Gira rápido, menor contacto.'},
+    {id:'tacos',name:'Con tacos',icon:'✹',grip:1.27,turn:.91,rolling:.89,weight:1.09,desc:'Agarre alto y respuesta brusca.'},
+    {id:'slick',name:'Slick competición',icon:'◍',grip:1.15,turn:1.10,rolling:1.12,weight:.95,desc:'Rápida y precisa en piso limpio.'},
+    {id:'mixta',name:'Mixta escolar',icon:'◐',grip:1.04,turn:1.04,rolling:1.02,weight:1.00,desc:'Comportamiento equilibrado.'},
+    {id:'mini',name:'Mini liviana',icon:'•',grip:.91,turn:1.30,rolling:1.16,weight:.82,desc:'Muy ágil, pierde estabilidad.'}
+  ];
+  const batteries = [
+    {id:'3.7',name:'Batería 3,7 V',icon:'🔋',voltage:3.7,speed:.72,accel:.74,weight:.86,desc:'Lenta y fácil de controlar.'},
+    {id:'7.4',name:'Batería 7,4 V',icon:'🔋',voltage:7.4,speed:1.00,accel:1.00,weight:1.00,desc:'Equilibrio para competir.'},
+    {id:'11.1',name:'Batería 11,1 V',icon:'⚡',voltage:11.1,speed:1.32,accel:1.38,weight:1.18,desc:'Muy rápida y exigente.'}
+  ];
+
+  const configs = [
+    {ramp:ramps[1],tire:tires[8],battery:batteries[1],forward:140,reverse:100,turn:160},
+    {ramp:ramps[2],tire:tires[4],battery:batteries[1],forward:140,reverse:100,turn:150}
+  ];
+  const colors = [
+    {main:'#43e6b2',dark:'#168c75',light:'#b8ffea',accent:'#5aa7ff'},
+    {main:'#ffb84d',dark:'#d97b18',light:'#ffe1a8',accent:'#ff5f72'}
+  ];
+  const controls = [
+    {forward:'KeyW',reverse:'KeyS',left:'KeyA',right:'KeyD',boost:'ShiftLeft'},
+    {forward:'ArrowUp',reverse:'ArrowDown',left:'ArrowLeft',right:'ArrowRight',boost:'Enter'}
+  ];
+
+  const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+  const message=document.getElementById('message'),keys=Object.create(null);
+  const prismaSplash=document.getElementById('prismaSplash'),enterSimulatorBtn=document.getElementById('enterSimulatorBtn');
+  const ring={x:canvas.width/2,y:canvas.height/2+12,radius:286};
+  const robots=[createRobot(0),createRobot(1)];
+  const TOTAL_ROUNDS=5;
+  const ZERO_ACTION={forward:false,reverse:false,left:false,right:false,boost:false};
+  const online={client:null,channel:null,connected:false,room:'',role:null,clientId:(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)),remoteAction:{...ZERO_ACTION},lastInputSent:'',lastInputAt:0,lastStateAt:0,peerCount:0,players:{},receiving:false};
+  let connectionMode='local',editingPlayer=0,mode='battle',running=false,roundOver=false,elapsed=0,lastTime=performance.now(),messageTimer=0,scores=[0,0],completedRounds=0,tournamentOver=false,roundWinners=[];
+
+  function closePrismaSplash(){
+    if(!prismaSplash||prismaSplash.classList.contains('hide'))return;
+    prismaSplash.classList.add('hide');
+    document.body.classList.remove('splash-open');
+    window.setTimeout(()=>prismaSplash.setAttribute('aria-hidden','true'),600);
+  }
+  function createRobot(id){return {id,x:ring.x,y:ring.y,angle:0,vx:0,vy:0,angularVelocity:0,width:43,length:58,out:false,turbo:100,throttle:0,steer:0};}
+  function componentCard(item,type){return `<div class="option" data-type="${type}" data-id="${item.id}" tabindex="0"><span class="icon">${item.icon}</span><strong>${item.name}</strong><small>${item.desc}</small></div>`;}
+
+
+  function serializeConfig(index){const c=configs[index];return {ramp:c.ramp.id,tire:c.tire.id,battery:c.battery.id,forward:c.forward,reverse:c.reverse,turn:c.turn};}
+  function applySerializedConfig(index,data){if(!data)return;const c=configs[index];c.ramp=ramps.find(x=>x.id===data.ramp)||c.ramp;c.tire=tires.find(x=>x.id===data.tire)||c.tire;c.battery=batteries.find(x=>x.id===data.battery)||c.battery;c.forward=Number(data.forward)||c.forward;c.reverse=Number(data.reverse)||c.reverse;c.turn=Number(data.turn)||c.turn;updateUI();}
+  function roomCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join('');}
+  function onlineConfig(){const c=window.SUMO_ONLINE_CONFIG||{};return {url:String(c.supabaseUrl||'').trim(),key:String(c.supabaseKey||'').trim()};}
+  function validOnlineConfig(){const c=onlineConfig();return /^https:\/\/.+\.supabase\.co$/i.test(c.url)&&c.key.length>20&&!c.key.includes('PEGA_');}
+  function setOnlineStatus(kind,html){const el=document.getElementById('onlineStatus');el.innerHTML=`<span class="connection-dot ${kind||''}"></span>${html}`;}
+  function localPlayerName(){return (document.getElementById('playerName').value||'Jugadora').trim().slice(0,20);}
+  function isOnlineHost(){return connectionMode==='online'&&online.connected&&online.role===0;}
+  function isOnlineGuest(){return connectionMode==='online'&&online.connected&&online.role===1;}
+  function canControlGame(){return connectionMode==='local'||isOnlineHost();}
+  function broadcast(event,payload){if(!online.channel||!online.connected)return Promise.resolve();return online.channel.send({type:'broadcast',event,payload:{...payload,from:online.clientId}}).catch(()=>{});}
+  function serializeGameState(){return {robots:robots.map(r=>({x:r.x,y:r.y,angle:r.angle,vx:r.vx,vy:r.vy,angularVelocity:r.angularVelocity,out:r.out,turbo:r.turbo,throttle:r.throttle,steer:r.steer})),configs:[serializeConfig(0),serializeConfig(1)],running,roundOver,elapsed,scores:[...scores],completedRounds,tournamentOver,roundWinners:[...roundWinners],mode,status:document.getElementById('statusHud').textContent,startText:document.getElementById('startBtn').textContent,roundText:document.getElementById('roundBtn').textContent};}
+  function applyGameState(s){if(!s||isOnlineHost())return;online.receiving=true;(s.robots||[]).forEach((data,i)=>Object.assign(robots[i],data));if(s.configs){applySerializedConfig(0,s.configs[0]);applySerializedConfig(1,s.configs[1]);}running=!!s.running;roundOver=!!s.roundOver;elapsed=Number(s.elapsed)||0;scores=Array.isArray(s.scores)?s.scores:[0,0];completedRounds=Number(s.completedRounds)||0;tournamentOver=!!s.tournamentOver;roundWinners=Array.isArray(s.roundWinners)?s.roundWinners:[];if(s.status)document.getElementById('statusHud').textContent=s.status;if(s.startText)document.getElementById('startBtn').textContent=s.startText;if(s.roundText)document.getElementById('roundBtn').textContent=s.roundText;updateScore();online.receiving=false;}
+  function sendMyConfig(){if(online.connected)broadcast('config',{index:online.role,config:serializeConfig(online.role)});}
+  function copyRoomCode(){if(!online.room)return;navigator.clipboard?.writeText(online.room).then(()=>showMessage('Código copiado',online.room,900)).catch(()=>{});}
+
+  function renderOptions(){
+    document.getElementById('rampOptions').innerHTML=ramps.map(x=>componentCard(x,'ramp')).join('');
+    document.getElementById('tireOptions').innerHTML=tires.map(x=>componentCard(x,'tire')).join('');
+    document.getElementById('batteryOptions').innerHTML=batteries.map(x=>componentCard(x,'battery')).join('');
+    document.querySelectorAll('.option').forEach(card=>{
+      const choose=()=>{const type=card.dataset.type;const list=type==='ramp'?ramps:type==='tire'?tires:batteries;configs[editingPlayer][type]=list.find(x=>x.id===card.dataset.id);updateUI();sendMyConfig();};
+      card.addEventListener('click',choose);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}});
+    });
+  }
+
+  function physics(index){
+    const c=configs[index];
+    const weight=1.55*c.ramp.weight*c.tire.weight*c.battery.weight;
+    const grip=c.tire.grip*c.ramp.stability;
+    const rawMax=455*c.battery.speed*c.tire.rolling/Math.sqrt(weight/1.55);
+    const rawAccel=430*c.battery.accel*c.tire.grip/Math.pow(weight/1.55,.72);
+    return {weight,grip,turn:c.tire.turn*c.ramp.stability/Math.sqrt(weight/1.55)*(c.turn/100),push:c.ramp.attack*c.tire.grip*Math.sqrt(weight/1.55),maxForward:rawMax*(c.forward/100),maxReverse:rawMax*.72*(c.reverse/100),acceleration:rawAccel,forwardScale:c.forward/100,reverseScale:c.reverse/100};
+  }
+
+  function updateUI(){
+    const c=configs[editingPlayer],p=physics(editingPlayer),cls=editingPlayer===0?'p1':'p2';
+    document.querySelectorAll('.option').forEach(card=>{card.classList.remove('selected','p1','p2');if(c[card.dataset.type].id===card.dataset.id)card.classList.add('selected',cls);});
+    document.querySelectorAll('.robot-tab').forEach((b,i)=>b.classList.toggle('active',i===editingPlayer));
+    document.getElementById('powerBox').classList.toggle('p2-edit',editingPlayer===1);
+    for(const name of ['forward','reverse','turn']){document.getElementById(name+'Power').value=c[name];document.getElementById(name+'Out').textContent=c[name]+' %';}
+    document.getElementById('maxSpeedStat').textContent=p.maxForward.toFixed(0);
+    document.getElementById('reverseStat').textContent=p.maxReverse.toFixed(0);
+    document.getElementById('gripStat').textContent=Math.round(p.grip*100)+' %';
+    document.getElementById('turnStat').textContent=Math.round(p.turn*100)+' %';
+    document.getElementById('pushStat').textContent=Math.round(p.push*100)+' %';
+    document.getElementById('weightStat').textContent=p.weight.toFixed(2).replace('.',',')+' kg';
+    updateSummaries();
+  }
+
+  function updateSummaries(){
+    configs.forEach((c,i)=>{
+      document.getElementById('summaryP'+(i+1)).innerHTML=`<b>Robot ${i+1}</b><br>${c.ramp.name}<br>${c.tire.name}<br>${c.battery.voltage.toFixed(1).replace('.',',')} V · ▲ ${c.forward}% · ▼ ${c.reverse}% · ↻ ${c.turn}%`;
+      document.getElementById('config'+(i+1)+'Hud').textContent=`${c.ramp.name} · ${c.battery.voltage.toFixed(1).replace('.',',')} V`;
+    });
+  }
+
+  function resetPositions(){
+    const starts=mode==='battle'?
+      [{x:ring.x-145,y:ring.y,angle:0},{x:ring.x+145,y:ring.y,angle:Math.PI}]:
+      [{x:ring.x,y:ring.y+125,angle:-Math.PI/2},{x:ring.x+200,y:ring.y,angle:Math.PI}];
+    robots.forEach((r,i)=>{Object.assign(r,starts[i]);r.vx=r.vy=r.angularVelocity=0;r.out=false;r.turbo=100;r.throttle=r.steer=0;});
+    elapsed=0;roundOver=false;
+  }
+
+  function showMessage(title,text,duration=1500,share=true){message.innerHTML=`<h3>${title}</h3><p>${text}</p>`;message.classList.add('show');clearTimeout(messageTimer);if(duration>0)messageTimer=setTimeout(()=>message.classList.remove('show'),duration);if(share&&isOnlineHost()&&!online.receiving)broadcast('notice',{title,text,duration});}
+
+  function resetTournament(){
+    scores=[0,0];completedRounds=0;tournamentOver=false;roundWinners=[];roundOver=false;running=false;
+    updateScore();
+    document.getElementById('roundBtn').textContent='Preparar ronda';
+  }
+
+  function startRound(){
+    if(!canControlGame())return;
+    if(connectionMode==='online'&&online.peerCount<2){showMessage('Falta la segunda jugadora','Comparte el código y espera a que se conecte.',1300,false);return;}
+    if(mode==='battle'&&tournamentOver)resetTournament();
+    resetPositions();running=true;roundOver=false;
+    document.getElementById('startBtn').textContent=mode==='battle'?'Pelea activa':'RC activo';
+    document.getElementById('statusHud').textContent=mode==='battle'?`Ronda ${completedRounds+1}: ¡empuja al rival fuera!`:'Entrenamiento RC';
+    updateTournamentHud();
+    showMessage(mode==='battle'?`¡RONDA ${completedRounds+1} DE ${TOTAL_ROUNDS}!`:'¡Robot listo!',mode==='battle'?'Robot 1: WASD · Robot 2: flechas':'Usa WASD para conducir.',1100);
+  }
+
+  function resetAll(){if(!canControlGame())return;running=false;roundOver=false;resetTournament();resetPositions();updateScore();document.getElementById('startBtn').textContent=mode==='battle'?'Iniciar ronda 1':'Iniciar RC';document.getElementById('statusHud').textContent='Pulsa “'+document.getElementById('startBtn').textContent+'”';showMessage('Simulador reiniciado','Comienza un nuevo torneo de cinco rondas.',1300);}
+
+  function setMode(next){
+    if(connectionMode==='online')next='battle';
+    mode=next;running=false;roundOver=false;resetTournament();
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+    document.getElementById('robotSelectorSection').style.display=mode==='battle'?'block':'none';
+    document.querySelector('.hud-card.right').style.visibility=mode==='battle'?'visible':'hidden';
+    document.querySelectorAll('.pad-wrap')[1].style.visibility=mode==='battle'?'visible':'hidden';
+    if(mode==='practice')editingPlayer=0;
+    document.getElementById('startBtn').textContent=mode==='battle'?'Iniciar ronda 1':'Iniciar RC';
+    resetPositions();updateScore();updateUI();showMessage(mode==='battle'?'Modo batalla para dos':'Modo entrenamiento',mode==='battle'?'Robot 1 usa WASD y Robot 2 usa las flechas.':'Un solo robot controlado con WASD.',1300);
+  }
+
+  function keyActionsFor(index){
+    if(connectionMode==='online')return {forward:!!(keys.KeyW||keys.ArrowUp),reverse:!!(keys.KeyS||keys.ArrowDown),left:!!(keys.KeyA||keys.ArrowLeft),right:!!(keys.KeyD||keys.ArrowRight),boost:!!(keys.ShiftLeft||keys.ShiftRight||keys.Enter||keys.Space)};
+    const c=controls[index];return {forward:!!keys[c.forward],reverse:!!keys[c.reverse],left:!!keys[c.left],right:!!keys[c.right],boost:!!keys[c.boost]};
+  }
+
+  function actionsForRobot(index){
+    if(connectionMode==='local')return keyActionsFor(index);
+    if(isOnlineHost())return index===0?keyActionsFor(0):online.remoteAction;
+    return ZERO_ACTION;
+  }
+
+  function applyControls(robot,index,dt){
+    if(!running||roundOver||robot.out||(mode==='practice'&&index===1)||isOnlineGuest())return;
+    const action=actionsForRobot(index),p=physics(index),cfg=configs[index];
+    const forward=(action.forward?1:0)-(action.reverse?1:0);
+    const steer=(action.right?1:0)-(action.left?1:0);
+    robot.throttle=forward;robot.steer=steer;
+    const signedSpeed=robot.vx*Math.cos(robot.angle)+robot.vy*Math.sin(robot.angle);
+    const speed=Math.hypot(robot.vx,robot.vy);
+    const turboOn=action.boost&&robot.turbo>0&&forward>0;
+    const turboFactor=turboOn?1.35:1;
+    if(turboOn)robot.turbo=Math.max(0,robot.turbo-dt*30);else robot.turbo=Math.min(100,robot.turbo+dt*8);
+
+    if(forward!==0){
+      const scale=forward>0?p.forwardScale:p.reverseScale*.78;
+      const force=p.acceleration*forward*scale*turboFactor;
+      robot.vx+=Math.cos(robot.angle)*force*dt;robot.vy+=Math.sin(robot.angle)*force*dt;
+    }
+    const steerEffect=Math.min(1.35,.38+Math.abs(signedSpeed)/95);
+    if(steer!==0){const reverseFlip=signedSpeed<-10?-1:1;robot.angularVelocity+=steer*p.turn*8.6*steerEffect*reverseFlip*dt;}
+
+    const fx=Math.cos(robot.angle),fy=Math.sin(robot.angle),lx=-fy,ly=fx;
+    const fVel=robot.vx*fx+robot.vy*fy;let lVel=robot.vx*lx+robot.vy*ly;
+    lVel*=1-Math.min(1,dt*(4.1*p.grip));robot.vx=fx*fVel+lx*lVel;robot.vy=fy*fVel+ly*lVel;
+    const max=(signedSpeed>=0?p.maxForward:p.maxReverse)*turboFactor;
+    if(speed>max){const s=max/speed;robot.vx*=s;robot.vy*=s;}
+    const rollingDrag=Math.pow(.985,dt*60*(1.15/cfg.tire.rolling));robot.vx*=rollingDrag;robot.vy*=rollingDrag;
+    robot.angularVelocity*=Math.pow(.91,dt*60*(.92/p.grip));
+    const maxTurnRate=1.2+6.2*Math.min(2.5,Math.max(.1,p.turn));
+    robot.angularVelocity=Math.max(-maxTurnRate,Math.min(maxTurnRate,robot.angularVelocity));
+    robot.angle+=robot.angularVelocity*dt;robot.x+=robot.vx*dt;robot.y+=robot.vy*dt;
+  }
+
+  function resolveCollision(dt){
+    if(mode!=='battle'||!running||roundOver)return;
+    const a=robots[0],b=robots[1],dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy)||.001,minDist=47;
+    if(dist>=minDist)return;
+    const nx=dx/dist,ny=dy/dist,overlap=minDist-dist,p1=physics(0),p2=physics(1),total=p1.weight+p2.weight;
+    a.x-=nx*overlap*(p2.weight/total);a.y-=ny*overlap*(p2.weight/total);
+    b.x+=nx*overlap*(p1.weight/total);b.y+=ny*overlap*(p1.weight/total);
+
+    const rel=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;
+    if(rel>0){
+      const impulse=rel*.76;
+      a.vx-=nx*impulse*(p2.weight/total);a.vy-=ny*impulse*(p2.weight/total);
+      b.vx+=nx*impulse*(p1.weight/total);b.vy+=ny*impulse*(p1.weight/total);
+    }
+    const aFront=Math.max(0,Math.cos(a.angle)*nx+Math.sin(a.angle)*ny);
+    const bFront=Math.max(0,Math.cos(b.angle)*-nx+Math.sin(b.angle)*-ny);
+    if(a.throttle>0&&aFront>.25){const shove=115*p1.push*aFront*(p1.weight/p2.weight);b.vx+=nx*shove*dt;b.vy+=ny*shove*dt;a.vx-=nx*shove*.16*dt;a.vy-=ny*shove*.16*dt;}
+    if(b.throttle>0&&bFront>.25){const shove=115*p2.push*bFront*(p2.weight/p1.weight);a.vx-=nx*shove*dt;a.vy-=ny*shove*dt;b.vx+=nx*shove*.16*dt;b.vy+=ny*shove*.16*dt;}
+  }
+
+  function checkBoundary(){
+    if(!running||roundOver||isOnlineGuest())return;
+    if(mode==='battle'){
+      const outside=robots.map((r,i)=>({r,i,d:Math.hypot(r.x-ring.x,r.y-ring.y)})).filter(item=>item.d>ring.radius+18&&!item.r.out);
+      if(outside.length>=2){
+        outside.forEach(({r})=>{r.out=true;r.vx=r.vy=r.angularVelocity=0;});
+        roundOver=true;running=false;
+        document.getElementById('statusHud').textContent=`Empate en la ronda ${completedRounds+1}`;
+        document.getElementById('startBtn').textContent=`Repetir ronda ${completedRounds+1}`;
+        showMessage('¡EMPATE!','Los dos robots salieron casi al mismo tiempo. La ronda se repite sin sumar puntos.',0);
+        return;
+      }
+      if(outside.length===1){
+        const {r,i}=outside[0];r.out=true;r.vx=r.vy=r.angularVelocity=0;finishRound(i===0?1:0);
+      }
+      return;
+    }
+    const r=robots[0],d=Math.hypot(r.x-ring.x,r.y-ring.y);
+    if(d>ring.radius+18&&!r.out){r.out=true;r.vx=r.vy=r.angularVelocity=0;running=false;showMessage('¡Fuera del dohyo!',`Permaneciste ${elapsed.toFixed(1).replace('.',',')} s.`,0);document.getElementById('statusHud').textContent='Fuera del dohyo';}
+  }
+
+  function finishRound(winner){
+    roundOver=true;running=false;scores[winner]++;completedRounds++;roundWinners.push(winner);robots.forEach(r=>{r.vx=r.vy=r.angularVelocity=0;});
+    updateScore();
+    const loser=winner===0?2:1;
+    if(completedRounds>=TOTAL_ROUNDS){
+      tournamentOver=true;updateTournamentHud();
+      const champion=scores[0]>scores[1]?0:1;
+      document.getElementById('statusHud').textContent=`Campeón: Robot ${champion+1}`;
+      document.getElementById('startBtn').textContent='Nuevo torneo';
+      document.getElementById('roundBtn').textContent='Reiniciar torneo';
+      showMessage(`🏆 ¡ROBOT ${champion+1} ES EL CAMPEÓN!`,`Terminó la serie de ${TOTAL_ROUNDS} rondas con marcador ${scores[0]} — ${scores[1]}.`,0);
+      return;
+    }
+    document.getElementById('statusHud').textContent=`Ronda ${completedRounds}: ganó el Robot ${winner+1}`;
+    document.getElementById('startBtn').textContent=`Iniciar ronda ${completedRounds+1}`;
+    showMessage(`¡ROBOT ${winner+1} GANA LA RONDA ${completedRounds}!`,`Sacó al Robot ${loser} en ${elapsed.toFixed(1).replace('.',',')} s. Marcador: ${scores[0]} — ${scores[1]}.`,0);
+  }
+
+  function updateTournamentHud(){
+    const roundHud=document.getElementById('roundHud'),roundDots=document.getElementById('roundDots');
+    if(mode!=='battle'){
+      roundHud.textContent='Práctica libre';roundDots.innerHTML='';return;
+    }
+    roundHud.textContent=tournamentOver?`Serie finalizada · ${TOTAL_ROUNDS} rondas`:`Ronda ${Math.min(completedRounds+1,TOTAL_ROUNDS)} de ${TOTAL_ROUNDS}`;
+    roundDots.innerHTML=Array.from({length:TOTAL_ROUNDS},(_,i)=>{
+      const winner=roundWinners[i];
+      const cls=winner===0?'p1':winner===1?'p2':(!tournamentOver&&i===completedRounds?'current':'');
+      const label=winner===0?'Ganó Robot 1':winner===1?'Ganó Robot 2':i===completedRounds?'Ronda actual':'Pendiente';
+      return `<span class="round-dot ${cls}" title="Ronda ${i+1}: ${label}"></span>`;
+    }).join('');
+  }
+
+  function updateScore(){document.getElementById('scoreHud').textContent=mode==='battle'?`${scores[0]} — ${scores[1]}`:'ENTRENAMIENTO';updateTournamentHud();}
+
+  function drawArena(){
+    const g=ctx.createRadialGradient(ring.x-70,ring.y-85,60,ring.x,ring.y,ring.radius+100);g.addColorStop(0,'#263341');g.addColorStop(.65,'#101922');g.addColorStop(1,'#03070c');ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(let i=0;i<4;i++){const x=120+i*290,grad=ctx.createRadialGradient(x,70,0,x,70,170);grad.addColorStop(0,'rgba(67,230,178,.09)');grad.addColorStop(1,'rgba(67,230,178,0)');ctx.fillStyle=grad;ctx.fillRect(x-170,0,340,280);}
+    ctx.save();ctx.translate(ring.x,ring.y);ctx.beginPath();ctx.arc(8,14,ring.radius+18,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,.55)';ctx.fill();
+    const floor=ctx.createRadialGradient(-80,-100,20,0,0,ring.radius);floor.addColorStop(0,'#d7dce0');floor.addColorStop(.54,'#b9c0c7');floor.addColorStop(1,'#8c959d');ctx.beginPath();ctx.arc(0,0,ring.radius,0,Math.PI*2);ctx.fillStyle=floor;ctx.fill();
+    ctx.strokeStyle='#f6f8fa';ctx.lineWidth=17;ctx.beginPath();ctx.arc(0,0,ring.radius-8,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='rgba(0,0,0,.34)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,ring.radius-24,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;for(let r=70;r<250;r+=55){ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.stroke();}ctx.beginPath();ctx.moveTo(-ring.radius+26,0);ctx.lineTo(ring.radius-26,0);ctx.stroke();ctx.fillStyle='rgba(0,0,0,.18)';ctx.font='900 34px system-ui';ctx.textAlign='center';ctx.fillText('PRISMA SUMO',0,14);ctx.restore();
+  }
+
+  function drawRobot(robot,index){
+    if(mode==='practice'&&index===1)return;
+    const c=configs[index],col=colors[index];
+    const robotScale=robot.length/80;
+    ctx.save();ctx.translate(robot.x,robot.y);ctx.rotate(robot.angle);ctx.scale(robotScale,robotScale);
+    ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.roundRect(-34,-23,80,60,11);ctx.fill();
+    const wheelW=c.tire.id==='ancha'?14:c.tire.id==='estrecha'?8:11,wheelL=c.tire.id==='mini'?25:32;ctx.fillStyle='#111';[[-12,-34],[-12,34]].forEach(([x,y])=>{ctx.save();ctx.translate(x,y);ctx.beginPath();ctx.roundRect(-wheelL/2,-wheelW/2,wheelL,wheelW,5);ctx.fill();ctx.strokeStyle='#59616a';ctx.lineWidth=2;ctx.stroke();ctx.restore();});
+    const body=ctx.createLinearGradient(-40,-29,38,29);body.addColorStop(0,col.dark);body.addColorStop(.55,col.main);body.addColorStop(1,col.dark);ctx.fillStyle=body;ctx.beginPath();ctx.roundRect(-38,-26,66,52,10);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.48)';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#0c2531';ctx.beginPath();ctx.roundRect(-18,-17,32,34,7);ctx.fill();ctx.fillStyle=c.battery.voltage>10?'#ff5f72':c.battery.voltage>5?'#5aa7ff':'#c8ff67';ctx.fillRect(-15,-13,25,26);ctx.fillStyle='#061116';ctx.font='900 9px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c.battery.voltage.toFixed(1)+'V',-2,0);
+    ctx.fillStyle='#dce5ea';ctx.strokeStyle='#61727c';ctx.lineWidth=2;ctx.beginPath();if(c.ramp.id==='plana'){ctx.moveTo(26,-26);ctx.lineTo(46,-23);ctx.lineTo(46,23);ctx.lineTo(26,26);}else if(c.ramp.id==='cuna'){ctx.moveTo(26,-26);ctx.lineTo(51,-18);ctx.lineTo(55,0);ctx.lineTo(51,18);ctx.lineTo(26,26);}else if(c.ramp.id==='larga'){ctx.moveTo(24,-26);ctx.lineTo(63,-14);ctx.lineTo(68,0);ctx.lineTo(63,14);ctx.lineTo(24,26);}else if(c.ramp.id==='doble'){ctx.moveTo(26,-26);ctx.lineTo(53,-23);ctx.lineTo(43,-3);ctx.lineTo(57,0);ctx.lineTo(43,3);ctx.lineTo(53,23);ctx.lineTo(26,26);}else{ctx.moveTo(24,-26);ctx.lineTo(55,-11);ctx.lineTo(68,0);ctx.lineTo(55,11);ctx.lineTo(24,26);}ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle=col.accent;ctx.beginPath();ctx.arc(23,-17,3.5,0,Math.PI*2);ctx.arc(23,17,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#06221b';ctx.font='1000 11px system-ui';ctx.fillText(String(index+1),-29,4);
+    if(actionsForRobot(index).boost&&running&&robot.turbo>0){ctx.fillStyle='rgba(255,95,114,.9)';ctx.beginPath();ctx.moveTo(-39,-11);ctx.lineTo(-58,0);ctx.lineTo(-39,11);ctx.closePath();ctx.fill();}ctx.restore();
+    ctx.save();ctx.textAlign='center';ctx.font='900 11px system-ui';ctx.fillStyle=col.main;ctx.fillText(`ROBOT ${index+1}`,robot.x,robot.y-35);ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(robot.x-23,robot.y+33,46,4);ctx.fillStyle=robot.turbo>25?col.main:'#ff5f72';ctx.fillRect(robot.x-23,robot.y+33,46*(robot.turbo/100),4);ctx.restore();
+  }
+
+  function drawGuide(){if(running)return;ctx.save();ctx.translate(ring.x,ring.y+185);ctx.fillStyle='rgba(255,255,255,.76)';ctx.font='700 18px system-ui';ctx.textAlign='center';ctx.fillText(mode==='battle'?`Serie de ${TOTAL_ROUNDS} rondas · pulsa “Iniciar ronda”`:'Configura el robot y pulsa “Iniciar RC”',0,0);ctx.restore();}
+
+  function loop(now){
+    const frameDt=Math.min(.033,(now-lastTime)/1000);lastTime=now;
+    const substeps=Math.max(1,Math.ceil(frameDt/.0075));
+    const dt=frameDt/substeps;
+    for(let step=0;step<substeps;step++){
+      if(running&&!roundOver&&!isOnlineGuest())elapsed+=dt;
+      applyControls(robots[0],0,dt);applyControls(robots[1],1,dt);resolveCollision(dt);checkBoundary();
+    }
+    if(isOnlineGuest()&&online.channel){const action=keyActionsFor(online.role),encoded=JSON.stringify(action);if(encoded!==online.lastInputSent||now-online.lastInputAt>90){online.lastInputSent=encoded;online.lastInputAt=now;broadcast('input',{action});}}
+    if(isOnlineHost()&&online.channel&&now-online.lastStateAt>45){online.lastStateAt=now;broadcast('state',{state:serializeGameState()});}
+    drawArena();drawGuide();drawRobot(robots[0],0);drawRobot(robots[1],1);
+    document.getElementById('speed1Hud').textContent=Math.hypot(robots[0].vx,robots[0].vy).toFixed(1).replace('.',',');
+    document.getElementById('speed2Hud').textContent=Math.hypot(robots[1].vx,robots[1].vy).toFixed(1).replace('.',',');
+    document.getElementById('timeHud').textContent='Tiempo: '+elapsed.toFixed(1).replace('.',',')+' s';requestAnimationFrame(loop);
+  }
+
+
+  function updateConnectionUI(){
+    const onlineMode=connectionMode==='online';document.getElementById('onlinePanel').classList.toggle('show',onlineMode);document.getElementById('localModeSection').classList.toggle('hidden',onlineMode);document.getElementById('robotSelectorSection').classList.toggle('hidden',onlineMode&&online.connected);document.querySelectorAll('.connection-btn').forEach(b=>b.classList.toggle('active',b.dataset.connection===connectionMode));
+    const guest=isOnlineGuest();document.querySelectorAll('.host-only').forEach(b=>b.disabled=guest||onlineMode&&!online.connected);
+    document.getElementById('copyRoomBtn').disabled=!online.room;document.getElementById('leaveRoomBtn').disabled=!online.connected;
+    document.getElementById('player1Label').textContent=connectionMode==='online'?(online.players[0]||'ANFITRIONA')+' · ROBOT 1':'ROBOT 1 · WASD';
+    document.getElementById('player2Label').textContent=connectionMode==='online'?(online.players[1]||'INVITADA')+' · ROBOT 2':'ROBOT 2 · FLECHAS';
+    document.querySelectorAll('.pad-wrap').forEach((el,i)=>{if(connectionMode==='online'&&online.connected)el.style.visibility=i===online.role?'visible':'hidden';else el.style.visibility=(mode==='practice'&&i===1)?'hidden':'visible';});
+    if(onlineMode&&online.connected){editingPlayer=online.role;updateUI();}
+  }
+
+  async function leaveRoom(silent=false){
+    const channel=online.channel,client=online.client;
+    online.channel=null;online.client=null;online.connected=false;online.room='';online.role=null;online.peerCount=0;online.players={};online.remoteAction={...ZERO_ACTION};running=false;roundOver=false;
+    if(!silent)setOnlineStatus('','<strong>Sin conectar.</strong> Crea otra sala o escribe un código.');updateConnectionUI();
+    if(channel){try{await channel.untrack();if(client)await client.removeChannel(channel);}catch(e){}}
+  }
+
+  async function connectRoom(role,code){
+    if(!validOnlineConfig()){setOnlineStatus('error','<strong>Falta configurar Supabase.</strong> Edita <code>config.js</code> siguiendo el archivo LEEME.');showMessage('Configuración pendiente','Primero completa los datos de Supabase en config.js.',0,false);return;}
+    await leaveRoom(true);connectionMode='online';mode='battle';online.role=role;online.room=code.toUpperCase();editingPlayer=role;setOnlineStatus('wait',`<strong>Conectando a ${online.room}…</strong>`);updateConnectionUI();
+    if(!window.supabase||typeof window.supabase.createClient!=='function'){setOnlineStatus('error','<strong>No cargó la librería de conexión.</strong> Revisa que el equipo tenga acceso a internet.');return;}
+    const cfg=onlineConfig();online.client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:false}});
+    const channel=online.client.channel('sumo:'+online.room,{config:{broadcast:{self:false},presence:{key:online.clientId}}});online.channel=channel;
+    channel.on('broadcast',{event:'input'},({payload})=>{if(isOnlineHost()&&payload.from!==online.clientId)online.remoteAction={...ZERO_ACTION,...payload.action};});
+    channel.on('broadcast',{event:'config'},({payload})=>{if(payload.from===online.clientId)return;applySerializedConfig(Number(payload.index),payload.config);});
+    channel.on('broadcast',{event:'state'},({payload})=>{if(isOnlineGuest())applyGameState(payload.state);});
+    channel.on('broadcast',{event:'notice'},({payload})=>{if(payload.from!==online.clientId)showMessage(payload.title,payload.text,payload.duration,false);});
+    channel.on('broadcast',{event:'hello'},({payload})=>{if(isOnlineHost()){broadcast('state',{state:serializeGameState()});broadcast('config',{index:0,config:serializeConfig(0)});}});
+    channel.on('presence',{event:'sync'},()=>{
+      const entries=Object.values(channel.presenceState()).flat();online.peerCount=entries.length;online.players={};entries.forEach(p=>{if(p.role===0||p.role===1)online.players[p.role]=p.name;});
+      if(entries.length>2){setOnlineStatus('error','<strong>Sala llena.</strong> Usa otro código.');leaveRoom(true);return;}
+      const waiting=entries.length<2;setOnlineStatus(waiting?'wait':'ok',`<strong>Sala <span class="room-code">${online.room}</span></strong> · ${waiting?'Esperando rival':'Dos jugadoras conectadas'} · Tú eres Robot ${online.role+1}`);updateConnectionUI();if(isOnlineHost()&&entries.length>=2)broadcast('state',{state:serializeGameState()});
+    });
+    channel.on('presence',{event:'leave'},()=>{online.remoteAction={...ZERO_ACTION};if(isOnlineHost()){running=false;setOnlineStatus('wait',`<strong>Sala <span class="room-code">${online.room}</span></strong> · La rival se desconectó.`);showMessage('Rival desconectada','La partida quedó en pausa hasta que vuelva a conectarse.',0,false);}});
+    channel.subscribe(async status=>{if(status==='SUBSCRIBED'){online.connected=true;await channel.track({clientId:online.clientId,name:localPlayerName(),role,joinedAt:Date.now()});setOnlineStatus('wait',`<strong>Sala <span class="room-code">${online.room}</span></strong> · Sincronizando…`);updateConnectionUI();sendMyConfig();broadcast('hello',{role,name:localPlayerName()});if(role===0){resetTournament();resetPositions();document.getElementById('statusHud').textContent='Esperando a la segunda jugadora';}}
+      else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){setOnlineStatus('error','<strong>No fue posible conectar.</strong> Revisa internet y config.js.');}
+    });
+  }
+
+  async function setConnectionMode(next){
+    if(next===connectionMode)return;if(connectionMode==='online')await leaveRoom(true);connectionMode=next;if(next==='online'){mode='battle';running=false;roundOver=false;setOnlineStatus(validOnlineConfig()?'':'error',validOnlineConfig()?'<strong>Listo para conectar.</strong> Crea una sala o introduce un código.':'<strong>Configuración pendiente.</strong> Completa <code>config.js</code>.');showMessage('Modo en línea','Una jugadora crea la sala y comparte el código con su rival.',1500,false);}else{online.role=null;setMode('battle');showMessage('Modo local','Dos jugadoras compiten en el mismo computador.',1200,false);}updateConnectionUI();
+  }
+
+  ['forward','reverse','turn'].forEach(name=>document.getElementById(name+'Power').addEventListener('input',e=>{configs[editingPlayer][name]=Number(e.target.value);updateUI();sendMyConfig();}));
+  document.querySelectorAll('.robot-tab').forEach(tab=>tab.addEventListener('click',()=>{if(connectionMode==='online'&&online.connected)return;editingPlayer=Number(tab.dataset.player);updateUI();}));
+  document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
+  document.getElementById('startBtn').addEventListener('click',startRound);
+  document.getElementById('roundBtn').addEventListener('click',()=>{
+    if(!canControlGame())return;
+    if(mode==='battle'&&tournamentOver){
+      resetTournament();resetPositions();document.getElementById('startBtn').textContent='Iniciar ronda 1';document.getElementById('statusHud').textContent='Nuevo torneo preparado';showMessage('Nuevo torneo preparado',`Se jugarán ${TOTAL_ROUNDS} rondas. Pulsa iniciar cuando estén listos.`,1300);return;
+    }
+    resetPositions();running=false;
+    document.getElementById('startBtn').textContent=mode==='battle'?`Iniciar ronda ${completedRounds+1}`:'Iniciar RC';
+    document.getElementById('statusHud').textContent=mode==='battle'?`Ronda ${completedRounds+1} preparada`:'Práctica preparada';
+    showMessage(mode==='battle'?`Ronda ${completedRounds+1} preparada`:'Práctica preparada','Pulsa iniciar cuando ambos jugadores estén listos.',1200);
+  });
+  document.getElementById('resetBtn').addEventListener('click',resetAll);
+
+  document.querySelectorAll('.connection-btn').forEach(btn=>btn.addEventListener('click',()=>setConnectionMode(btn.dataset.connection)));
+  document.getElementById('createRoomBtn').addEventListener('click',()=>connectRoom(0,roomCode()));
+  document.getElementById('joinRoomBtn').addEventListener('click',()=>{const code=document.getElementById('roomCodeInput').value.trim().toUpperCase();if(code.length!==6){showMessage('Código incompleto','Escribe los seis caracteres de la sala.',1100,false);return;}connectRoom(1,code);});
+  document.getElementById('roomCodeInput').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
+  document.getElementById('copyRoomBtn').addEventListener('click',copyRoomCode);
+  document.getElementById('leaveRoomBtn').addEventListener('click',async()=>{await leaveRoom();connectionMode='local';setMode('battle');updateConnectionUI();showMessage('Saliste de la sala','Regresaste al modo local.',1100,false);});
+
+  enterSimulatorBtn?.addEventListener('click',closePrismaSplash);
+  window.addEventListener('keydown',e=>{if(prismaSplash&&!prismaSplash.classList.contains('hide')){if(['Enter','Space'].includes(e.code)){e.preventDefault();closePrismaSplash();}return;}if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Enter'].includes(e.code))e.preventDefault();keys[e.code]=true;},{passive:false});
+  window.addEventListener('keyup',e=>{keys[e.code]=false;});window.addEventListener('blur',()=>Object.keys(keys).forEach(k=>keys[k]=false));
+  document.querySelectorAll('.control-btn').forEach(btn=>{const code=btn.dataset.key,player=Number(btn.dataset.player),cls=player===0?'p1':'p2';const on=e=>{e.preventDefault();keys[code]=true;btn.classList.add('active',cls);};const off=e=>{e.preventDefault();keys[code]=false;btn.classList.remove('active',cls);};btn.addEventListener('pointerdown',on);btn.addEventListener('pointerup',off);btn.addEventListener('pointercancel',off);btn.addEventListener('pointerleave',off);});
+
+  renderOptions();resetPositions();updateUI();updateScore();updateConnectionUI();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
